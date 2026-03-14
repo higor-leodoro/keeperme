@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum Platform {
+  APP
+  WHATSAPP
+}
+
+enum Sender {
+  USER
+  ASSISTANT
+}
+
+enum MessageType {
+  TEXT
+  AUDIO
+}
+
+enum EditPermission {
+  OWNER_ONLY
+  ALL_MEMBERS
+  OWN_TRANSACTIONS_ONLY
+}
+
+enum MemberRole {
+  OWNER
+  MEMBER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String
+  name      String
+  lastName  String?
+  googleId  String?  @unique
+  appleId   String?  @unique
+  photo     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions     Transaction[]
+  chatSessions     ChatSession[]
+  ownedGroups      Group[]       @relation("GroupOwner")
+  groupMemberships GroupMember[]
+  sentInvites      GroupInvite[] @relation("InviteSender")
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  userId      String
+  amount      Float
+  type        TransactionType
+  categoryId  String
+  description String?
+  date        DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  groupId     String?
+
+  user        User          @relation(fields: [userId], references: [id])
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  group       Group?        @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  ChatMessage ChatMessage[]
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([groupId])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+}
+
+model ChatSession {
+  id           String   @id @default(uuid())
+  userId       String
+  platform     Platform @default(APP)
+  summary      String?
+  messageCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  messages ChatMessage[]
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([platform])
+}
+
+model ChatMessage {
+  id            String      @id @default(uuid())
+  sessionId     String
+  parentId      String?
+  sender        Sender      @default(USER)
+  messageType   MessageType @default(TEXT)
+  content       String
+  transcript    String?
+  timestamp     DateTime    @default(now())
+  transactionId String?
+
+  session     ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([sessionId, timestamp])
+}
+
+model Group {
+  id             String         @id @default(uuid())
+  name           String
+  description    String?
+  ownerId        String
+  editPermission EditPermission @default(OWN_TRANSACTIONS_ONLY)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  owner        User          @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members      GroupMember[]
+  transactions Transaction[]
+  invites      GroupInvite[]
+
+  @@index([ownerId])
+}
+
+model GroupMember {
+  id        String     @id @default(uuid())
+  groupId   String
+  userId    String
+  role      MemberRole @default(MEMBER)
+  isActive  Boolean    @default(true)
+  joinedAt  DateTime   @default(now())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+  @@index([groupId, isActive])
+}
+
+model GroupInvite {
+  id         String       @id @default(uuid())
+  groupId    String
+  email      String
+  token      String       @unique @default(uuid())
+  invitedBy  String
+  status     InviteStatus @default(PENDING)
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  group         Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invitedByUser User  @relation("InviteSender", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, email, status])
+  @@index([email, status])
+  @@index([token])
+  @@index([groupId])
+}

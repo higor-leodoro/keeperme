@@ -1,0 +1,27 @@
+{
+  "home": {
+    "title": "Início"
+  },
+  "newTransaction": {
+    "title": "Registrar receitas/despesas"
+  },
+  "signIn": {
+    "title": "Entrar"
+  },
+  "transactionsReport": {
+    "title": "Extrato"
+  },
+  "profile": {
+    "title": "Perfil",
+    "name": "Nome",
+    "lastName": "Sobrenome",
+    "language": "Idioma",
+    "currency": "Moeda",
+    "logout": "Sair",
+    "save": "Salvar",
+    "portugueseBrazil": "Português (Brasil)",
+    "englishUS": "Inglês (EUA)",
+    "brazilian": "Real (BRL)",
+    "dollar": "Dólar (USD)"
+  }
+}

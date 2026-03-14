@@ -1,0 +1,14 @@
+node_modules/
+android/
+ios/
+dist/
+build/
+.expo/
+.expo-shared/
+**/*.min.js
+**/generated/**
+*.config.js
+metro.config.js
+babel.config.js
+
+

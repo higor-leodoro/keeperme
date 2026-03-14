@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "keeperme",
+    "slug": "keeperme",
+    "version": "1.0.0",
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.984547779397-87crouthd4i6pdevo4493vgrglsa4p4h"
+        }
+      ],
+      "expo-font",
+      "expo-apple-authentication"
+    ],
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.keeperme.ios",
+      "appleTeamId": "73WD5LZKTN"
+    },
+    "android": {
+      "package": "com.keeperme.android",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a2b8e302-5545-481a-bd0f-fad7dace6be4"
+      }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/a2b8e302-5545-481a-bd0f-fad7dace6be4"
+    }
+  }
+}

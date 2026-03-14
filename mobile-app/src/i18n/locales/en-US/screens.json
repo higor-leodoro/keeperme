@@ -1,0 +1,27 @@
+{
+  "home": {
+    "title": "Home"
+  },
+  "newTransaction": {
+    "title": "Register income/expenses"
+  },
+  "signIn": {
+    "title": "Sign In"
+  },
+  "transactionsReport": {
+    "title": "Transaction Report"
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "lastName": "Last Name",
+    "language": "Language",
+    "currency": "Currency",
+    "logout": "Logout",
+    "save": "Save",
+    "portugueseBrazil": "Portuguese (Brazil)",
+    "englishUS": "English (US)",
+    "brazilian": "Brazilian Real (BRL)",
+    "dollar": "US Dollar (USD)"
+  }
+}

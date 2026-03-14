@@ -1,0 +1,58 @@
+{
+  "home": {
+    "greeting": "Hello, {{name}}",
+    "welcomeBack": "Welcome back!",
+    "quickActions": "Quick actions",
+    "expensesSummary": "Expense summary by category"
+  },
+  "balanceCards": {
+    "balance": "Balance",
+    "income": "Income",
+    "expenses": "Expenses"
+  },
+  "category": {
+    "HOUSE": "House",
+    "FOOD": "Food",
+    "GROCERY": "Shopping",
+    "TRANSPORT": "Transport",
+    "HEALTH": "Health",
+    "EDUCATION": "Education",
+    "ENTERTAINMENT": "Entertainment",
+    "FINANCE": "Finance",
+    "OTHERS": "Others"
+  },
+  "quickActions": {
+    "newIncome": "New income",
+    "newExpense": "New expense",
+    "extract": "Extract"
+  },
+  "newTransaction": {
+    "title": "New transaction",
+    "amount": "Amount",
+    "description": "Description",
+    "type": "Transaction type",
+    "expense": "Expense",
+    "income": "Income",
+    "category": "Category",
+    "date": "Date",
+    "save": "Save",
+    "success": "Transaction created successfully",
+    "error": "Error creating transaction"
+  },
+  "tabs": {
+    "home": "Home",
+    "transactions": "Transactions",
+    "profile": "Profile"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "loading": "Loading transactions...",
+    "emptyState": "No transactions yet.\nStart by creating a new income or expense!",
+    "filters": {
+      "all": "All",
+      "expenses": "Expenses",
+      "income": "Income"
+    },
+    "categoryTotal": "Total"
+  }
+}

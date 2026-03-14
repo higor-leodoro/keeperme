@@ -1,0 +1,58 @@
+{
+  "home": {
+    "greeting": "Olá, {{name}}",
+    "welcomeBack": "Bem-vindo de volta!",
+    "quickActions": "Ações rápidas",
+    "expensesSummary": "Resumo despesas por categoria"
+  },
+  "balanceCards": {
+    "balance": "Saldo",
+    "income": "Receitas",
+    "expenses": "Despesas"
+  },
+  "category": {
+    "HOUSE": "Casa",
+    "FOOD": "Alimentação",
+    "GROCERY": "Compras",
+    "TRANSPORT": "Transporte",
+    "HEALTH": "Saúde",
+    "EDUCATION": "Educação",
+    "ENTERTAINMENT": "Lazer",
+    "FINANCE": "Finanças",
+    "OTHERS": "Outros"
+  },
+  "quickActions": {
+    "newIncome": "Nova receita",
+    "newExpense": "Nova despesa",
+    "extract": "Extrato"
+  },
+  "newTransaction": {
+    "title": "Nova transação",
+    "amount": "Valor",
+    "description": "Descrição",
+    "type": "Tipo de transação",
+    "expense": "Despesa",
+    "income": "Receita",
+    "category": "Categoria",
+    "date": "Data",
+    "save": "Salvar",
+    "success": "Transação criada com sucesso",
+    "error": "Erro ao criar transação"
+  },
+  "tabs": {
+    "home": "Início",
+    "transactions": "Transações",
+    "profile": "Perfil"
+  },
+  "transactions": {
+    "title": "Transações",
+    "loading": "Carregando transações...",
+    "emptyState": "Nenhuma transação ainda.\nComece criando uma nova receita ou despesa!",
+    "filters": {
+      "all": "Todas",
+      "expenses": "Despesas",
+      "income": "Receitas"
+    },
+    "categoryTotal": "Total"
+  }
+}

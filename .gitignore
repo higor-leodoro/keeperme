@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+web-build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+*.pem
+
+# IDE
+.idea/
+.vscode/
+*.sublime-workspace
+
+# Debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Expo
+.expo/
+expo-env.d.ts
+
+# TypeScript
+*.tsbuildinfo

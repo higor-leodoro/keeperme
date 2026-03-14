@@ -1,0 +1,21 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "signOut": "Sign out",
+    "changeLanguage": "Change language"
+  },
+  "labels": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name"
+  },
+  "success": "Success",
+  "error": "Error",
+  "updateSuccess": "Data updated successfully!",
+  "updateError": "Error updating data",
+  "nameRequired": "Name is required"
+}
+

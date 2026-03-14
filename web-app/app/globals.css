@@ -1,0 +1,181 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --surface-2: #1A1A1A;
+  --surface-3: #222222;
+  --border: #252525;
+  --text-muted: #4A4A4A;
+  --text-secondary: #888888;
+  --text-primary: #E0E0E0;
+  --white: #FFFFFF;
+
+  --background: #080808;
+  --foreground: #E0E0E0;
+  --card: #111111;
+  --card-foreground: #E0E0E0;
+  --popover: #111111;
+  --popover-foreground: #E0E0E0;
+  --primary: #FFFFFF;
+  --primary-foreground: #000000;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #E0E0E0;
+  --muted: #1A1A1A;
+  --muted-foreground: #888888;
+  --accent: #222222;
+  --accent-foreground: #E0E0E0;
+  --destructive: #333333;
+  --destructive-foreground: #E0E0E0;
+  --border-token: #252525;
+  --input: #1A1A1A;
+  --ring: #FFFFFF;
+  --radius: 0.5rem;
+
+  --sidebar: #111111;
+  --sidebar-foreground: #E0E0E0;
+  --sidebar-primary: #FFFFFF;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1A1A1A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #252525;
+  --sidebar-ring: #FFFFFF;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border-token);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-text-muted: var(--text-muted);
+}
+
+body{
+  outline: none
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* Dot grid pattern for login */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(0, 157, 255, 0.255) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Float animation for decorative cards */
+@keyframes float1 {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(-3deg); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translateY(16px) rotate(1deg); }
+  50% { transform: translateY(6px) rotate(1deg); }
+}
+@keyframes float3 {
+  0%, 100% { transform: translateY(-8px) rotate(-1deg); }
+  50% { transform: translateY(-18px) rotate(-1deg); }
+}
+
+/* Float animation utility classes */
+.animate-float-1 { animation: float1 4s ease-in-out infinite; }
+.animate-float-2 { animation: float2 4.5s ease-in-out infinite; }
+.animate-float-3 { animation: float3 3.8s ease-in-out infinite; }
+
+/* Modal animation */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.modal-enter {
+  animation: modalIn 200ms ease forwards;
+}
+
+/* Bar chart animation */
+@keyframes barGrow {
+  from { width: 0; }
+}
+.bar-animate {
+  animation: barGrow 800ms ease forwards;
+}
+
+/* Toast animation */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
