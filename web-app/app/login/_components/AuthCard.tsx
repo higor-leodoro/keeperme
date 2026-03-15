@@ -31,14 +31,14 @@ export function AuthCard() {
   }, []);
 
   const cardClasses =
-    "w-full px-5 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 bg-white/5 backdrop-blur-xs border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl";
+    "w-full px-5 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 bg-white/5 backdrop-blur-xs border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl";
 
   return (
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="w-full max-w-[400px] sm:max-w-[440px] md:max-w-[480px] lg:max-w-[600px]"
+      className="w-full max-w-[340px] sm:max-w-[380px] md:max-w-[400px] max-h-[90dvh]"
       style={{ transition: "transform 0.15s ease-out" }}
     >
       <div

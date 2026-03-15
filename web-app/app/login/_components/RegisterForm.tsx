@@ -28,27 +28,27 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
           alt="Keeperme logo"
           width={250}
           height={10}
-          className="mb-4 w-[80px] sm:w-[110px] md:w-[130px] lg:w-[150px] h-auto"
+          className="mb-1 w-[50px] sm:w-[60px] md:w-[70px] h-auto"
         />
       </div>
 
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-primary mb-1 text-center">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary mb-0.5 text-center">
         Create account
       </h2>
-      <p className="text-sm text-muted-foreground mb-8 text-center">
+      <p className="text-xs text-muted-foreground mb-3 text-center">
         Start managing your finances
       </p>
 
       <form onSubmit={onSubmit}>
-        <div className="flex gap-3 mb-5">
+        <div className="flex gap-3 mb-3">
           <div className="flex-1">
-            <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-2">
+            <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-1">
               FIRST NAME
             </Label>
             <Input
               type="text"
               placeholder="Alex"
-              className="h-11 bg-surface-2 border-border text-primary text-sm focus:border-primary"
+              className="h-9 bg-surface-2 border-border text-primary text-sm focus:border-primary"
               {...register("firstName")}
             />
             {errors.firstName && (
@@ -58,13 +58,13 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
             )}
           </div>
           <div className="flex-1">
-            <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-2">
+            <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-1">
               LAST NAME
             </Label>
             <Input
               type="text"
               placeholder="Morgan"
-              className="h-11 bg-surface-2 border-border text-primary text-sm focus:border-primary"
+              className="h-9 bg-surface-2 border-border text-primary text-sm focus:border-primary"
               {...register("lastName")}
             />
             {errors.lastName && (
@@ -75,14 +75,14 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
           </div>
         </div>
 
-        <div className="mb-5">
-          <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-2">
+        <div className="mb-3">
+          <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-1">
             EMAIL
           </Label>
           <Input
             type="email"
             placeholder="alex@keeperme.app"
-            className="h-11 bg-surface-2 border-border text-primary text-sm focus:border-primary"
+            className="h-9 bg-surface-2 border-border text-primary text-sm focus:border-primary"
             {...register("email")}
           />
           {errors.email && (
@@ -90,15 +90,15 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
           )}
         </div>
 
-        <div className="mb-6">
-          <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-2">
+        <div className="mb-3">
+          <Label className="text-[11px] tracking-[2.5px] uppercase text-text-muted mb-1">
             PASSWORD
           </Label>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Create a password"
-              className="h-11 bg-surface-2 border-border text-primary text-sm pr-10 focus:border-primary"
+              className="h-9 bg-surface-2 border-border text-primary text-sm pr-10 focus:border-primary"
               {...register("password")}
             />
             <button
@@ -117,7 +117,7 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
           )}
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full h-11">
+        <Button type="submit" disabled={isSubmitting} className="w-full h-9">
           {isSubmitting ? (
             <Loader2 size={18} className="animate-spin" />
           ) : (
@@ -126,7 +126,7 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
         </Button>
       </form>
 
-      <div className="flex items-center gap-3 my-6">
+      <div className="flex items-center gap-3 my-3">
         <div className="flex-1 h-px bg-border" />
         <span className="text-xs text-text-muted">or</span>
         <div className="flex-1 h-px bg-border" />
@@ -134,13 +134,13 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
 
       <Button
         variant="outline"
-        className="w-full h-11 gap-2 hover:bg-surface-3"
+        className="w-full h-9 gap-2 hover:bg-surface-3"
       >
         <GoogleIcon />
         Continue with Google
       </Button>
 
-      <p className="text-center mt-8 text-[13px] text-muted-foreground">
+      <p className="text-center mt-3 text-[13px] text-muted-foreground">
         {"Already have an account? "}
         <button
           type="button"
