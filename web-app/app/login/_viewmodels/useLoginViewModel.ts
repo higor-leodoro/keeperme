@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { loginAction } from "../_actions/auth";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -22,8 +23,13 @@ export function useLoginViewModel() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = form.handleSubmit(() => {
-    setTimeout(() => router.push("/dashboard"), 1000);
+  const onSubmit = form.handleSubmit(async (data) => {
+    const result = await loginAction(data);
+    if (result.success) {
+      router.push("/dashboard");
+    } else {
+      form.setError("root", { message: result.error });
+    }
   });
 
   return {

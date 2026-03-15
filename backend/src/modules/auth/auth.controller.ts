@@ -4,12 +4,25 @@ import { CurrentUser } from '../../common/decorators/current.user.decorator';
 import { Public } from '../../common/decorators/public.route.decorator';
 import { AuthService } from './auth.service';
 import { JwtPayload } from './jwt.strategy';
-import { GoogleLoginDto, AppleLoginDto } from './dtos';
+import { GoogleLoginDto, AppleLoginDto, LoginDto, RegisterDto } from './dtos';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+  @Public()
+  @Post('register')
+  async register(@Body() dto: RegisterDto) {
+    return this.authService.registerWithPassword(dto);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  async login(@Body() dto: LoginDto) {
+    return this.authService.loginWithPassword(dto);
+  }
+
   @Public()
   @Post('google')
   async googleLogin(@Body() dto: GoogleLoginDto) {

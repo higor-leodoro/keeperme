@@ -1,37 +1,43 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 
 interface Toast {
-  id: string
-  message: string
+  id: string;
+  message: string;
 }
 
 interface ToastContextType {
-  showToast: (message: string) => void
+  showToast: (message: string) => void;
 }
 
-const ToastContext = createContext<ToastContextType>({ showToast: () => {} })
+const ToastContext = createContext<ToastContextType>({ showToast: () => {} });
 
 export function useToastContext() {
-  return useContext(ToastContext)
+  return useContext(ToastContext);
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([])
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback((message: string) => {
-    const id = Math.random().toString(36).slice(2)
-    setToasts((prev) => [...prev, { id, message }])
+    const id = Math.random().toString(36).slice(2);
+    setToasts((prev) => [...prev, { id, message }]);
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id))
-    }, 3000)
-  }, [])
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2">
+      <div className="fixed top-4 right-4 z-99 flex flex-col gap-2">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -42,5 +48,5 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ))}
       </div>
     </ToastContext.Provider>
-  )
+  );
 }

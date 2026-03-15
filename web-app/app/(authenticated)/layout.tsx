@@ -8,6 +8,7 @@ import { mockUser, mockInvites } from "@/lib/mock-data"
 import { ToastProvider } from "@/components/toast-provider"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { logoutAction } from "@/app/login/_actions/auth"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -79,7 +80,10 @@ function Sidebar() {
           variant="ghost"
           size="sm"
           className="text-muted-foreground hover:text-primary p-0 h-auto"
-          onClick={() => router.push("/login")}
+          onClick={async () => {
+            await logoutAction()
+            router.push("/login")
+          }}
         >
           <LogOut size={16} />
           Sign out

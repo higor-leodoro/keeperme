@@ -1,11 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client } from 'google-auth-library';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { UserService } from '../user/user.service';
 import { UserResponseDto } from './dtos/user-response.dto';
-import { AppleLoginDto } from './dtos';
+import { AppleLoginDto, LoginDto, RegisterDto } from './dtos';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -24,22 +29,47 @@ export class AuthService {
   }
 
   async validateGoogleToken(token: string) {
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken: token,
-      audience: this.config.get('GOOGLE_CLIENT_ID'),
-    });
+    let googleUser: {
+      sub: string;
+      email: string;
+      given_name?: string;
+      family_name?: string;
+      picture?: string;
+    };
 
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      throw new UnauthorizedException('Invalid Token');
+    try {
+      // Try as ID token first (mobile apps)
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: token,
+        audience: this.config.get('GOOGLE_CLIENT_ID'),
+      });
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        throw new UnauthorizedException('Invalid Token');
+      }
+      googleUser = payload as typeof googleUser;
+    } catch {
+      // Fallback: try as access token (web app)
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v3/userinfo`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!response.ok) {
+        throw new UnauthorizedException('Invalid Google token');
+      }
+      const data = await response.json();
+      if (!data.sub || !data.email) {
+        throw new UnauthorizedException('Invalid Google token');
+      }
+      googleUser = data;
     }
 
     const user = await this.usersService.findOrCreate({
-      email: payload.email,
-      googleId: payload.sub,
-      name: payload.given_name ?? '',
-      lastName: payload.family_name ?? '',
-      photo: payload.picture ?? '',
+      email: googleUser.email,
+      googleId: googleUser.sub,
+      name: googleUser.given_name ?? '',
+      lastName: googleUser.family_name ?? '',
+      photo: googleUser.picture ?? '',
     });
 
     return user;
@@ -69,6 +99,51 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async registerWithPassword(dto: RegisterDto) {
+    const existing = await this.usersService.findByEmail(dto.email);
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const user = await this.usersService.createWithPassword({
+      email: dto.email,
+      password: hashedPassword,
+      name: dto.name,
+      lastName: dto.lastName,
+    });
+
+    const { id, email, name, lastName, photo } = user;
+    const validUser: UserResponseDto = { id, email, name, lastName, photo };
+    const token = await this.jwtService.signAsync({ sub: id, email });
+
+    return { user: validUser, token };
+  }
+
+  async loginWithPassword(dto: LoginDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.password) {
+      throw new UnauthorizedException(
+        'This account uses Google sign-in. Please use the Google button.',
+      );
+    }
+
+    const valid = await bcrypt.compare(dto.password, user.password);
+    if (!valid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const { id, email, name, lastName, photo } = user;
+    const validUser: UserResponseDto = { id, email, name, lastName, photo };
+    const token = await this.jwtService.signAsync({ sub: id, email });
+
+    return { user: validUser, token };
   }
 
   async validateAppleToken(identityToken: string) {

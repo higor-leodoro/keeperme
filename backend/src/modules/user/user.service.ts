@@ -42,6 +42,19 @@ export class UserService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async createWithPassword(data: {
+    email: string;
+    password: string;
+    name: string;
+    lastName: string;
+  }): Promise<User> {
+    return this.prisma.user.create({ data });
+  }
+
   async findOrCreate(data: CreateUserDto): Promise<User> {
     if (!data.googleId) {
       throw new BadRequestException('Google ID is required');

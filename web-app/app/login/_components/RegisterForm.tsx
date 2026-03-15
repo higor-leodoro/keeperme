@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./GoogleIcon";
 import { useRegisterViewModel } from "../_viewmodels/useRegisterViewModel";
+import { useGoogleAuth } from "../_viewmodels/useGoogleAuth";
 
 interface RegisterFormProps {
   onFlip: () => void;
@@ -19,6 +20,8 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
     register,
     formState: { errors, isSubmitting },
   } = form;
+  const { login: googleLogin, isLoading: googleLoading, error: googleError } =
+    useGoogleAuth();
 
   return (
     <>
@@ -117,6 +120,12 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
           )}
         </div>
 
+        {errors.root && (
+          <p className="text-xs text-red-400 mb-2 text-center">
+            {errors.root.message}
+          </p>
+        )}
+
         <Button type="submit" disabled={isSubmitting} className="w-full h-9">
           {isSubmitting ? (
             <Loader2 size={18} className="animate-spin" />
@@ -132,11 +141,21 @@ export function RegisterForm({ onFlip }: RegisterFormProps) {
         <div className="flex-1 h-px bg-border" />
       </div>
 
+      {googleError && (
+        <p className="text-xs text-red-400 mb-2 text-center">{googleError}</p>
+      )}
+
       <Button
         variant="outline"
         className="w-full h-9 gap-2 hover:bg-surface-3"
+        onClick={() => googleLogin()}
+        disabled={googleLoading}
       >
-        <GoogleIcon />
+        {googleLoading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <GoogleIcon />
+        )}
         Continue with Google
       </Button>
 
