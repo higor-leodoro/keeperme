@@ -11,8 +11,8 @@ import {
   LogOut,
   Bell,
 } from "lucide-react";
-import { mockUser, mockInvites } from "@/lib/mock-data";
 import { ToastProvider } from "@/components/toast-provider";
+import { QueryProvider } from "@/components/query-provider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/login/_actions/auth";
+import { useGetMe } from "@/hooks/queries";
+import { useGetPendingInvites } from "@/hooks/queries";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -40,7 +42,11 @@ const pageTitles: Record<string, string> = {
 function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const initials = `${mockUser.name[0]}${mockUser.lastName[0]}`;
+  const { data: user } = useGetMe();
+
+  const initials = user
+    ? `${user.name?.[0] || ""}${user.lastName?.[0] || ""}`
+    : "...";
 
   return (
     <aside className="fixed left-0 top-0 flex flex-col w-[220px] h-screen bg-surface border-r border-border z-40">
@@ -86,10 +92,10 @@ function Sidebar() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium text-primary truncate">
-                  {mockUser.name} {mockUser.lastName}
+                  {user ? `${user.name} ${user.lastName || ""}` : "Loading..."}
                 </div>
                 <div className="text-[11px] text-text-muted truncate">
-                  {mockUser.email}
+                  {user?.email || ""}
                 </div>
               </div>
             </button>
@@ -114,11 +120,16 @@ function Sidebar() {
 
 function TopBar() {
   const pathname = usePathname();
+  const { data: user } = useGetMe();
+  const { data: pendingInvites } = useGetPendingInvites();
+
   const title =
     pageTitles[pathname] ||
     (pathname.startsWith("/groups/") ? "Group Details" : "");
-  const initials = `${mockUser.name[0]}${mockUser.lastName[0]}`;
-  const hasPendingInvites = mockInvites.length > 0;
+  const initials = user
+    ? `${user.name?.[0] || ""}${user.lastName?.[0] || ""}`
+    : "...";
+  const hasPendingInvites = (pendingInvites?.length || 0) > 0;
 
   return (
     <header className="flex items-center justify-between h-[60px] px-8 border-b border-border">
@@ -133,7 +144,7 @@ function TopBar() {
           <Bell size={18} />
           {hasPendingInvites && (
             <span className="flex items-center justify-center absolute top-0 right-0 size-4 rounded-full bg-primary text-black text-[10px] font-semibold">
-              {mockInvites.length}
+              {pendingInvites!.length}
             </span>
           )}
         </Button>
@@ -151,14 +162,16 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ToastProvider>
-      <div className="flex min-h-screen bg-background">
-        <Sidebar />
-        <div className="flex flex-col flex-1 ml-[220px]">
-          <TopBar />
-          <main className="p-8 overflow-y-auto flex-1">{children}</main>
+    <QueryProvider>
+      <ToastProvider>
+        <div className="flex min-h-screen bg-background">
+          <Sidebar />
+          <div className="flex flex-col flex-1 ml-[220px]">
+            <TopBar />
+            <main className="p-8 overflow-y-auto flex-1">{children}</main>
+          </div>
         </div>
-      </div>
-    </ToastProvider>
+      </ToastProvider>
+    </QueryProvider>
   );
 }

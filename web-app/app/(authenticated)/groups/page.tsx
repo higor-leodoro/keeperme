@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Users, ArrowLeftRight } from "lucide-react"
-import { mockGroups, mockInvites, mockUser } from "@/lib/mock-data"
+import { Users, ArrowLeftRight, Loader2 } from "lucide-react"
+import { useGetGroups, useGetPendingInvites, useGetMe } from "@/hooks/queries"
+import { useCreateGroup, useAcceptInvite, useRejectInvite } from "@/hooks/mutations"
 import { useToastContext } from "@/components/toast-provider"
 import {
   Dialog,
@@ -17,24 +18,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { EditPermission } from "@/types"
 
 function CreateGroupModal({
   open,
   onClose,
   onSave,
+  isPending,
 }: {
   open: boolean
   onClose: () => void
-  onSave: () => void
+  onSave: (data: { name: string; description: string; editPermission: EditPermission }) => void
+  isPending?: boolean
 }) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [permission, setPermission] = useState("OWN_TRANSACTIONS_ONLY")
+  const [permission, setPermission] = useState<EditPermission>("OWN_TRANSACTIONS_ONLY")
 
   const permissionOptions = [
-    { value: "OWNER_ONLY", label: "Owner Only", desc: "Only the group owner can add or edit transactions" },
-    { value: "ALL_MEMBERS", label: "All Members", desc: "All members can add and edit any transaction" },
-    { value: "OWN_TRANSACTIONS_ONLY", label: "Own Transactions Only", desc: "Members can only edit their own transactions" },
+    { value: "OWNER_ONLY" as const, label: "Owner Only", desc: "Only the group owner can add or edit transactions" },
+    { value: "ALL_MEMBERS" as const, label: "All Members", desc: "All members can add and edit any transaction" },
+    { value: "OWN_TRANSACTIONS_ONLY" as const, label: "Own Transactions Only", desc: "Members can only edit their own transactions" },
   ]
 
   return (
@@ -92,8 +96,8 @@ function CreateGroupModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={onSave}>
-            Save
+          <Button onClick={() => onSave({ name, description, editPermission: permission })} disabled={isPending}>
+            {isPending ? <Loader2 size={16} className="animate-spin" /> : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -105,17 +109,65 @@ export default function GroupsPage() {
   const { showToast } = useToastContext()
   const [showModal, setShowModal] = useState(false)
 
+  const { data: groups, isLoading } = useGetGroups()
+  const { data: pendingInvites } = useGetPendingInvites()
+  const { data: user } = useGetMe()
+
+  const createGroupMutation = useCreateGroup({
+    onSuccess: () => {
+      setShowModal(false)
+      showToast("Group created")
+    },
+    onError: (error) => showToast(error.message),
+  })
+
+  const acceptInviteMutation = useAcceptInvite({
+    onSuccess: () => showToast("Invite accepted"),
+    onError: (error) => showToast(error.message),
+  })
+
+  const rejectInviteMutation = useRejectInvite({
+    onSuccess: () => showToast("Invite rejected"),
+    onError: (error) => showToast(error.message),
+  })
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <Loader2 size={24} className="animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Invites banner */}
-      {mockInvites.length > 0 && (
-        <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-6 py-4 mb-6">
-          <span className="text-sm text-foreground">
-            You have {mockInvites.length} pending group invitation{mockInvites.length > 1 ? "s" : ""}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => showToast("Invite accepted")}>
-            View invites
-          </Button>
+      {(pendingInvites?.length || 0) > 0 && (
+        <div className="flex flex-col gap-3 mb-6">
+          {pendingInvites!.map((invite) => (
+            <div key={invite.id} className="flex items-center justify-between bg-surface border border-border rounded-lg px-6 py-4">
+              <span className="text-sm text-foreground">
+                {invite.invitedByUser?.name} invited you to join <strong>{invite.group?.name}</strong>
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => acceptInviteMutation.mutate(invite.token)}
+                  disabled={acceptInviteMutation.isPending}
+                >
+                  Accept
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => rejectInviteMutation.mutate(invite.token)}
+                  disabled={rejectInviteMutation.isPending}
+                >
+                  Reject
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -128,8 +180,8 @@ export default function GroupsPage() {
 
       {/* Group cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {mockGroups.map((group) => {
-          const userMember = group.members.find((m) => m.user.id === mockUser.id)
+        {(groups || []).map((group) => {
+          const userMember = group.members.find((m) => m.user.id === user?.id)
           const role = userMember?.role || "MEMBER"
 
           return (
@@ -139,7 +191,6 @@ export default function GroupsPage() {
               className="no-underline"
             >
               <div className="bg-surface border border-border rounded-lg p-6 cursor-pointer transition-colors hover:border-muted-foreground">
-                {/* Top row */}
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-base font-semibold text-primary">
                     {group.name}
@@ -153,7 +204,6 @@ export default function GroupsPage() {
                   {group.description}
                 </p>
 
-                {/* Stats */}
                 <div className="flex items-center gap-4 mb-2">
                   <span className="flex items-center gap-1 text-[13px] text-text-muted">
                     <Users size={14} />
@@ -179,13 +229,17 @@ export default function GroupsPage() {
         })}
       </div>
 
+      {(groups || []).length === 0 && (
+        <div className="flex items-center justify-center h-[120px] text-text-muted text-sm">
+          No groups yet. Create one to get started!
+        </div>
+      )}
+
       <CreateGroupModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onSave={() => {
-          setShowModal(false)
-          showToast("Group created")
-        }}
+        onSave={(data) => createGroupMutation.mutate(data)}
+        isPending={createGroupMutation.isPending}
       />
     </div>
   )
