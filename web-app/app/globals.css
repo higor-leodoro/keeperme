@@ -85,13 +85,14 @@
   --color-text-muted: var(--text-muted);
 }
 
-body{
-  outline: none
+*:focus, *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
