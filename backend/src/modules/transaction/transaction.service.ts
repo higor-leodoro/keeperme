@@ -97,6 +97,8 @@ export class TransactionService {
   async findAll(
     userId: string,
     groupId?: string,
+    startDate?: string,
+    endDate?: string,
   ): Promise<TransactionResponseDto[]> {
     try {
       let whereClause: any = { userId };
@@ -120,6 +122,17 @@ export class TransactionService {
         whereClause = { groupId };
       } else {
         whereClause.groupId = null;
+      }
+
+      // Add date range filters
+      if (startDate || endDate) {
+        whereClause.date = {};
+        if (startDate) {
+          whereClause.date.gte = new Date(startDate);
+        }
+        if (endDate) {
+          whereClause.date.lte = new Date(endDate);
+        }
       }
 
       const transactions = await this.prisma.transaction.findMany({

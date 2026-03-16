@@ -39,8 +39,10 @@ export class TransactionController {
   async findAll(
     @CurrentUser() user: JwtPayload,
     @Query('groupId') groupId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ): Promise<TransactionResponseDto[]> {
-    return this.transactionService.findAll(user.sub, groupId);
+    return this.transactionService.findAll(user.sub, groupId, startDate, endDate);
   }
 
   @Get('/all-categories')

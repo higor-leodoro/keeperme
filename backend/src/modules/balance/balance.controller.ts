@@ -14,8 +14,10 @@ export class BalanceController {
   async getBalance(
     @CurrentUser() user: JwtPayload,
     @Query('groupId') groupId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ): Promise<BalanceResponseDto> {
-    return this.balanceService.getBalance(user.sub, groupId);
+    return this.balanceService.getBalance(user.sub, groupId, startDate, endDate);
   }
 }
 

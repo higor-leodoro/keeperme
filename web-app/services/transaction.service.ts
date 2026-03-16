@@ -1,8 +1,15 @@
 import { api } from "./config"
 import { Transaction, CreateTransactionDTO, TransactionCategory } from "@/types"
 
-export const getTransactions = (groupId?: string): Promise<Transaction[]> =>
-  api.get<Transaction[]>("/transactions", groupId ? { groupId } : undefined)
+export const getTransactions = (
+  params?: { groupId?: string; startDate?: string; endDate?: string }
+): Promise<Transaction[]> => {
+  const query: Record<string, string> = {}
+  if (params?.groupId) query.groupId = params.groupId
+  if (params?.startDate) query.startDate = params.startDate
+  if (params?.endDate) query.endDate = params.endDate
+  return api.get<Transaction[]>("/transactions", Object.keys(query).length > 0 ? query : undefined)
+}
 
 export const getTransactionsAllCategories = (
   params?: { startDate?: string; endDate?: string }

@@ -1,14 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { TrendingUp, TrendingDown, Loader2 } from "lucide-react"
-import { useGetBalance } from "@/hooks/queries"
-import { useGetTransactions } from "@/hooks/queries"
-import { useGetTransactionAllCategories } from "@/hooks/queries"
+import { useGetBalance, useGetTransactions, useGetTransactionAllCategories } from "@/hooks/queries"
+import { PeriodFilter, getDateRange } from "@/components/period-filter"
 import { cn, formatCurrency } from "@/lib/utils"
+import { DateRange, PeriodFilter as PeriodFilterType } from "@/types"
 
-function BalanceCards() {
-  const { data: balance, isLoading } = useGetBalance()
+function BalanceCards({ dateRange }: { dateRange: DateRange }) {
+  const { data: balance, isLoading } = useGetBalance(dateRange)
 
   if (isLoading) {
     return (
@@ -57,8 +58,8 @@ function BalanceCards() {
   )
 }
 
-function SpendingByCategory() {
-  const { data: categories, isLoading } = useGetTransactionAllCategories()
+function SpendingByCategory({ dateRange }: { dateRange: DateRange }) {
+  const { data: categories, isLoading } = useGetTransactionAllCategories(dateRange)
 
   if (isLoading) {
     return (
@@ -108,8 +109,8 @@ function SpendingByCategory() {
   )
 }
 
-function RecentTransactions() {
-  const { data: transactions, isLoading } = useGetTransactions()
+function RecentTransactions({ dateRange }: { dateRange: DateRange }) {
+  const { data: transactions, isLoading } = useGetTransactions(dateRange)
 
   if (isLoading) {
     return (
@@ -167,15 +168,26 @@ function RecentTransactions() {
 }
 
 export default function DashboardPage() {
+  const [period, setPeriod] = useState<PeriodFilterType>("30d")
+  const [dateRange, setDateRange] = useState<DateRange>(getDateRange("30d"))
+
+  const handleFilterChange = (range: DateRange, p: PeriodFilterType) => {
+    setDateRange(range)
+    setPeriod(p)
+  }
+
   return (
     <div>
-      <BalanceCards />
+      <div className="mb-6">
+        <PeriodFilter value={dateRange} period={period} onChange={handleFilterChange} />
+      </div>
+      <BalanceCards dateRange={dateRange} />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3">
-          <SpendingByCategory />
+          <SpendingByCategory dateRange={dateRange} />
         </div>
         <div className="lg:col-span-2">
-          <RecentTransactions />
+          <RecentTransactions dateRange={dateRange} />
         </div>
       </div>
     </div>

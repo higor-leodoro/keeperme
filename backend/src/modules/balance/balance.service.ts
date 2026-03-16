@@ -14,6 +14,8 @@ export class BalanceService {
   async getBalance(
     userId: string,
     groupId?: string,
+    startDate?: string,
+    endDate?: string,
   ): Promise<BalanceResponseDto> {
     try {
       // Build where clause based on groupId
@@ -37,6 +39,17 @@ export class BalanceService {
       } else {
         // Individual transactions only
         whereClauseBase = { userId, groupId: null };
+      }
+
+      // Add date range filters
+      if (startDate || endDate) {
+        whereClauseBase.date = {};
+        if (startDate) {
+          whereClauseBase.date.gte = new Date(startDate);
+        }
+        if (endDate) {
+          whereClauseBase.date.lte = new Date(endDate);
+        }
       }
 
       // Get total income

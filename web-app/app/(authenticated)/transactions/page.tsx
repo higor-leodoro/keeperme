@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { CurrencyInput } from "@/components/currency-input"
+import { PeriodFilter, getDateRange } from "@/components/period-filter"
 import { cn, formatCurrency, formatDate } from "@/lib/utils"
-import { Transaction } from "@/types"
+import { Transaction, DateRange, PeriodFilter as PeriodFilterType } from "@/types"
 
 type TransactionType = "INCOME" | "EXPENSE"
 type FilterType = "ALL" | "INCOME" | "EXPENSE"
@@ -163,8 +164,10 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+  const [period, setPeriod] = useState<PeriodFilterType>("30d")
+  const [dateRange, setDateRange] = useState<DateRange>(getDateRange("30d"))
 
-  const { data: transactions, isLoading } = useGetTransactions()
+  const { data: transactions, isLoading } = useGetTransactions(dateRange)
 
   const createMutation = useCreateTransaction({
     onSuccess: () => {
@@ -213,23 +216,31 @@ export default function TransactionsPage() {
   return (
     <div>
       {/* Filters bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <div className="flex border border-border rounded-md overflow-hidden">
-          {(["ALL", "INCOME", "EXPENSE"] as const).map((f, idx) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={cn(
-                "h-9 px-4 text-[13px] font-medium border-none cursor-pointer transition-all",
-                filter === f
-                  ? "bg-primary text-black"
-                  : "bg-surface text-muted-foreground",
-                idx < 2 && "border-r border-border"
-              )}
-            >
-              {f === "ALL" ? "All" : f === "INCOME" ? "Income" : "Expense"}
-            </button>
-          ))}
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
+          <PeriodFilter
+            value={dateRange}
+            period={period}
+            onChange={(range, p) => { setDateRange(range); setPeriod(p) }}
+          />
+
+          <div className="flex border border-border rounded-md overflow-hidden">
+            {(["ALL", "INCOME", "EXPENSE"] as const).map((f, idx) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  "h-9 px-4 text-[13px] font-medium border-none cursor-pointer transition-all",
+                  filter === f
+                    ? "bg-primary text-black"
+                    : "bg-surface text-muted-foreground",
+                  idx < 2 && "border-r border-border"
+                )}
+              >
+                {f === "ALL" ? "All" : f === "INCOME" ? "Income" : "Expense"}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
