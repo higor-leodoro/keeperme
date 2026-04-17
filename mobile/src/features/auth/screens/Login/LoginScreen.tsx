@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { useLoginViewModel } from '@/features/auth/hooks/models/useLoginViewModel';
-import { AtmosphericBackground } from './components/AtmosphericBackground';
+import { AtmosphericBackground } from '@/features/auth/components/AtmosphericBackground';
 import { LogoHalo } from './components/LogoHalo';
 import { LoginPanel } from './components/LoginPanel';
 import { MetaBar } from './components/MetaBar';
