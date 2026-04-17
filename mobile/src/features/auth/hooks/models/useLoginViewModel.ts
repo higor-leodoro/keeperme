@@ -1,15 +1,27 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '@/app/router/types';
+import type { AuthStackParamList } from '@/app/router/types';
 
-type RootNavigation = NativeStackNavigationProp<RootStackParamList>;
+type AuthNavigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 export function useLoginViewModel() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<AuthNavigation>();
 
-  const handleEnter = () => {
-    navigation.getParent<RootNavigation>()?.replace('App', { screen: 'Home' });
+  const handleAppleLogin = () => {
+    console.log('apple');
   };
 
-  return { handleEnter };
+  const handleGoogleLogin = () => {
+    console.log('google');
+  };
+
+  const goToLoginEmail = () => {
+    navigation.navigate('LoginEmail');
+  };
+
+  const goToSignup = () => {
+    navigation.navigate('Signup');
+  };
+
+  return { handleAppleLogin, handleGoogleLogin, goToLoginEmail, goToSignup };
 }

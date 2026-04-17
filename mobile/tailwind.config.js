@@ -7,6 +7,7 @@ module.exports = {
       colors: {
         bg: {
           base: '#06060A',
+          deeper: '#050507',
           elevated: '#0F1114',
           'elevated-2': '#12151A',
           'elevated-3': '#1A1D23',
@@ -16,11 +17,21 @@ module.exports = {
           secondary: 'rgba(245, 240, 232, 0.55)',
           hint: 'rgba(245, 240, 232, 0.38)',
           mute: 'rgba(245, 240, 232, 0.28)',
+          dim: 'rgba(245, 240, 232, 0.2)',
+          soft: 'rgba(245, 240, 232, 0.75)',
+          faint: 'rgba(245, 240, 232, 0.45)',
+          ghost: 'rgba(245, 240, 232, 0.4)',
         },
         border: {
           subtle: 'rgba(245, 240, 232, 0.06)',
           DEFAULT: 'rgba(245, 240, 232, 0.08)',
           strong: 'rgba(245, 240, 232, 0.14)',
+          glass: 'rgba(255, 255, 255, 0.1)',
+          hair: 'rgba(255, 255, 255, 0.05)',
+        },
+        overlay: {
+          'white-4': 'rgba(255, 255, 255, 0.04)',
+          'white-50': 'rgba(255, 255, 255, 0.5)',
         },
         accent: {
           DEFAULT: '#F5F0E8',
@@ -64,6 +75,15 @@ module.exports = {
         lg: '22px',
         xl: '26px',
         '2xl': '28px',
+      },
+      letterSpacing: {
+        'mono-wide': '1.8px',
+        'mono-widest': '2.16px',
+      },
+      boxShadow: {
+        panel: '0 20px 60px rgba(0, 0, 0, 0.5)',
+        button: '0 2px 8px rgba(0, 0, 0, 0.3)',
+        logo: '0 4px 20px rgba(0, 0, 0, 0.5)',
       },
     },
   },

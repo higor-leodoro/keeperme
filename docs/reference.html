@@ -1,0 +1,175 @@
+You are implementing the Login screen for the KeeperMe mobile app.
+
+# Tech stack
+- React Native + Expo + TypeScript
+- NativeWind (Tailwind for React Native) — already configured with the project's theme
+- Fonts already loaded: Bricolage Grotesque (300, 400, 500, 600), JetBrains Mono (300, 400, 500), Geist (300, 400, 500)
+- Navigation: React Navigation (already set up)
+- Design system tokens already in `tailwind.config.js`
+
+# Rules
+1. USE the existing Tailwind classes from the configured theme. Never hardcode hex colors, font sizes, or font family strings.
+2. If a token/class doesn't exist, STOP and ask me before creating it.
+3. Install libraries when needed. For this screen expect: `expo-linear-gradient`, `expo-blur`, `react-native-svg`, `react-native-reanimated`, `lucide-react-native`.
+4. All UI copy is in pt-BR.
+5. Match the visual reference as closely as React Native allows. When CSS doesn't map 1:1, use the workarounds in this prompt.
+
+# Visual reference
+Read `./docs/reference/login-reference.html` — this is the exact visual target for this screen.
+
+# Logo
+Use `./assets/logo.png` via `<Image>`. DO NOT recreate the logo in SVG. The reference HTML has an SVG approximation — ignore it, use the real PNG.
+
+# Screen structure
+
+## 1. Root container
+- Full-screen `<View>` with safe area at top
+- Background is atmospheric, NOT flat black (see Background section)
+
+## 2. Atmospheric background (layered, absolute-positioned)
+
+This is critical. Flat black = AI slop. Use THREE stacked layers:
+
+**Layer 1** — Base color `#050507` filling the entire screen.
+
+**Layer 2** — Three `<LinearGradient>` components (from `expo-linear-gradient`) absolutely positioned to simulate a radial gradient mesh. Since RN has no radial gradient natively, approximate with linear gradients at angles, or use `react-native-svg` `<RadialGradient>` inside an absolute `<Svg>` full-screen.
+
+Preferred approach: absolute `<Svg width="100%" height="100%">` with three `<RadialGradient>` defs:
+- Ellipse 70%×50% at (50%, 28%) — color `rgba(130, 145, 180, 0.16)` fading to transparent at 60%
+- Ellipse 60%×50% at (15%, 75%) — color `rgba(180, 150, 100, 0.055)` fading to transparent at 55%
+- Ellipse 55%×60% at (90%, 90%) — color `rgba(70, 90, 120, 0.12)` fading to transparent at 55%
+
+All three render inside `<Svg>` as `<Ellipse>` fills, stacked absolutely. `pointerEvents="none"`.
+
+**Layer 3** — Orbital ambient rings. Absolute `<Svg>` centered at roughly (50%, 22%) of screen, size 720×720. Inside: three concentric `<Circle>` with radii 140, 220, 310, stroke color `rgba(245, 240, 232, 0.08)`, stroke-width 1, no fill. Apply `opacity` of 1, 0.7, 0.4 respectively. `pointerEvents="none"`. Position it so the center aligns with where the logo will sit.
+
+**Grain overlay** — SKIP for now. React Native doesn't support `mix-blend-mode: overlay` natively. Acceptable loss.
+
+## 3. Logo zone (top 55% of screen, centered)
+
+- Container: absolute, top 0, left 0, right 0, height 55%, centered via flex.
+- Inside, a wrapper with ambient halo:
+  - Halo: absolute child behind the logo, 280×280 circle, radial gradient `rgba(200, 210, 230, 0.1)` center → transparent. Animated with Reanimated (scale 0.95↔1.05, opacity 0.6↔1, 4s loop, ease-in-out).
+  - Logo: `<Image source={require('./assets/logo.png')}>` at 160×160, resizeMode contain. Drop shadow via `shadowColor: '#000'`, offset (0, 4), opacity 0.5, radius 20.
+- On mount: logo does a reveal animation (opacity 0→1, scale 0.9→1, 1200ms, ease-out-expo, delay 200ms) — use Reanimated.
+
+## 4. Status line (below logo zone, above panel)
+
+- Absolute positioned at roughly 55% from top minus 10px.
+- Centered pill: `<BlurView intensity={10} tint="dark">` wrapping content.
+- Inner content: padding 7px 14px, bg `rgba(255,255,255,0.035)`, border 1px `rgba(255,255,255,0.06)`, border-radius 999.
+- Content row: [6×6 green pulsing dot] [text "canal seguro · estabelecido"]
+- Dot color `#A8D4BA`, glow via shadow. Animate with Reanimated: scale 0.9↔1.15, opacity 0.5↔1, 2400ms loop ease-in-out.
+- Text: JetBrains Mono 10px, color `rgba(245, 240, 232, 0.55)`, letter-spacing 0.24em, uppercase, weight 400.
+- On mount: fade up (opacity 0→1, translateY 14→0, 800ms, delay 900ms).
+
+## 5. Login panel (glass card, bottom area)
+
+- Absolute: bottom 80px, left 20px, right 20px.
+- Padding: 22px 20px 20px.
+- Background: `<BlurView intensity={32} tint="dark">` wrapping the content, OVER a `<LinearGradient>` of `rgba(255,255,255,0.06)` → `rgba(255,255,255,0.02)` → `rgba(255,255,255,0.005)` at 170deg.
+- Border 1px `rgba(255,255,255,0.08)`, border-radius 26px.
+- Shadow: offset (0, 20), opacity 0.5, radius 60, color `#000`.
+- Inside, an absolute `<View>` child simulating the asymmetric ambient glow: position top -30%, left -10%, width 60%, height 100%. Use a centered radial gradient via `<Svg><RadialGradient>` with `rgba(200, 210, 230, 0.1)` fading to transparent at 55%. `pointerEvents="none"`.
+- On mount: fade up (opacity 0→1, translateY 14→0, 800ms, delay 1100ms).
+
+### Panel content
+
+**Panel header row** (space-between, margin-bottom 18px):
+- Left: "Entrar" — Bricolage Grotesque 17px weight 500, letter-spacing -0.025em, color `text-primary`.
+- Right: "AUTH · 01" — JetBrains Mono 10px caps, letter-spacing 0.18em, color `text-hint`.
+
+**Buttons stack** (gap 10px):
+
+*Primary button — Continuar com Apple:*
+- Height 52px, border-radius 14px.
+- Bg `text-primary` (off-white `#F5F0E8`), text color `bg-base` (`#08090B`).
+- Inset top highlight via overlay view: absolute top 0, left 0, right 0, height 1px, bg `rgba(255,255,255,0.5)`.
+- Shadow: offset (0, 2), opacity 0.3, radius 8.
+- Content: Apple logo icon (use lucide-react-native `Apple`, 18px, color `bg-base`) + "Continuar com Apple" (Bricolage 15px weight 500, letter-spacing -0.018em).
+- Pressed state: opacity 0.6 + scale 0.97 (via `Pressable` + Reanimated).
+
+*Secondary button — Continuar com Google:*
+- Height 52px, border-radius 14px.
+- Bg `rgba(255,255,255,0.04)` via BlurView intensity 10 + overlay. Border 1px `rgba(255,255,255,0.1)`.
+- Text color `text-primary`.
+- Content: Google multicolor icon (inline SVG — use the one from reference HTML, colored with white at varying opacities) + "Continuar com Google" (Bricolage 15px weight 500).
+- Pressed: opacity 0.6 (no scale).
+
+**Divider row** (margin 14px 0):
+- Horizontal layout: [line] [text] [line]
+- Lines: 1px height, linear gradient from transparent → `rgba(255,255,255,0.1)` → transparent.
+- Text: "OU" — JetBrains Mono 9px, letter-spacing 0.24em, uppercase, color `rgba(245, 240, 232, 0.4)`.
+
+**Email link button**:
+- Transparent background, no border.
+- Padding 12px, center-aligned.
+- Content row: envelope icon (`Mail` from lucide-react-native, 14px, strokeWidth 1.5, color `rgba(245, 240, 232, 0.55)`) + "continuar com email" (Bricolage 14px, color at 75% opacity, letter-spacing -0.015em).
+- Navigates to the email/password form screen (create as separate screen, stub for now or navigate to a placeholder).
+
+**Footer link** (margin-top 16px, padding-top 16px, border-top 1px `rgba(255,255,255,0.05)`):
+- Centered text: "não tem conta? criar agora"
+- "não tem conta?" — Geist 13px, color `rgba(245, 240, 232, 0.45)`.
+- "criar agora" — Geist 13px weight 500, color `text-primary`, with thin underline via border-bottom on `<Text>` wrapped in `<View>` (RN doesn't support text underline styling well — use `textDecorationLine: 'underline'`).
+- The "criar agora" part is pressable, navigates to the signup flow.
+
+## 6. Meta bar (bottom 32px, centered)
+
+- Three items in a row with "·" separators:
+  - "V1.0.0" · "BUILD A8F2" · "PT-BR"
+- All JetBrains Mono 9px, color at 28% opacity, letter-spacing 0.2em, uppercase.
+- Separators at 20% opacity.
+- On mount: fade up (opacity 0→1, translateY 14→0, 800ms, delay 1400ms).
+
+# Authentication logic
+
+- Apple button: call placeholder function `handleAppleLogin()` — just `console.log('apple')` for now. We'll wire up to the `/auth/apple` endpoint later.
+- Google button: placeholder `handleGoogleLogin()` → console.log.
+- Email link: navigate to a `LoginEmail` screen (create a stub with just a placeholder text "Email flow coming soon" for now).
+- "criar agora" link: navigate to `Signup` screen (same, stub).
+
+# File organization
+
+Create the screen at `src/screens/auth/LoginScreen.tsx` (or matching the project's existing convention — LOOK AT THE EXISTING FOLDER STRUCTURE FIRST and follow it).
+
+Factor out reusable pieces into `src/components/` if they're obviously reusable (e.g., `GlassCard`, `PulsingDot`, `OrbitalRings`). If unsure, keep inline for now — we can refactor after.
+
+# Animation setup
+
+Use `react-native-reanimated` v3 with shared values and worklets. Stagger the mount animations using delays:
+- 200ms: logo reveal (1200ms)
+- 900ms: status line fade up (800ms)
+- 1100ms: panel fade up (800ms)
+- 1400ms: meta bar fade up (800ms)
+
+The pulse animations (halo breath, dot pulse) are infinite loops — start them on mount and leave them running.
+
+# Before you finish
+
+Run through this checklist:
+- [ ] All colors come from theme tokens (Tailwind classes or referenced constants), not hardcoded hex values
+- [ ] Fonts reference the exact family names loaded in the project (Bricolage Grotesque, JetBrains Mono, Geist)
+- [ ] No CSS-specific features leaked (no backdrop-filter string, no mix-blend-mode, no ::before/::after)
+- [ ] All Lucide icons have `strokeWidth={1.5}`
+- [ ] Atmospheric background is in place (NOT flat black)
+- [ ] Mount animations are staggered correctly
+- [ ] Pulse animations running on halo + dots
+- [ ] Primary button has `opacity 0.6 + scale 0.97` on press
+- [ ] All copy is pt-BR
+- [ ] Navigation placeholders are in place (Apple/Google/Email/Signup)
+
+# Before coding
+
+First, read:
+1. `./docs/reference/login-reference.html`
+2. `./tailwind.config.js`
+3. `./src/theme/*` (if exists)
+4. `./App.tsx` or root to understand navigation structure
+5. The existing screens folder to match file conventions
+
+Then tell me:
+- Which screen file path you'll create
+- Which libraries need installation
+- Any theme tokens that appear missing
+
+Wait for my confirmation before generating code.
